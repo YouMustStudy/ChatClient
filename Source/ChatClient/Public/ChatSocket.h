@@ -18,6 +18,7 @@ using namespace std;
 #include "Networking.h"
 #include "Sockets.h"
 #include "SocketSubsystem.h"
+#include "Blueprint/UserWidget.h"
 
 #include "ChatSocket.generated.h"
 
@@ -42,10 +43,19 @@ public:
 	void ChangeToLobby();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void AddChatLog(const FString& msg);
+	void AddChatLog(const TArray<FString> &msg);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void AddErrorLog(const FString& msg);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnterRoom(const FString& msg);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnterRoomList(const TArray<FString> &rooms);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RefreshUserList(const TArray<FString>& users);
 
 private:
 	FSocket* m_socket{ nullptr };

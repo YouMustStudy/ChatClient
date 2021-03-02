@@ -56,6 +56,8 @@ void AChatSocket::recvThread()
 	size_t convertedNum=0;
 	uint8 buffer[BUF_SIZE + 1];
 	string data;
+	char suffixStamp = 5;
+	string suffix = string("\r\n") + suffixStamp;
 	while (true == m_online)
 	{
 		int32 readLength= 0;
@@ -65,12 +67,12 @@ void AChatSocket::recvThread()
 
 		while (true)
 		{
-			int32 detPos = data.find("\r\n");
+			int32 detPos = data.find(suffix);
 			if (string::npos != detPos)
 			{
 				mbstowcs_s<BUF_SIZE>(&convertedNum, utf16buffer, data.substr(0, detPos).c_str(), BUF_SIZE);
 				m_recvQueue.Enqueue(utf16buffer);
-				data = data.substr(detPos + 2);
+				data = data.substr(detPos + suffix.size());
 			}
 			else break;
 		}
@@ -98,7 +100,6 @@ constexpr int32 errLen = 4;
 void AChatSocket::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (true == m_online)
 	{
 		FString data;
@@ -113,9 +114,27 @@ void AChatSocket::Tick(float DeltaTime)
 			{
 				AddErrorLog(data.Mid(errLen));
 			}
+			else if (true == data.StartsWith(L"[방입장]"))
+			{
+				EnterRoom(data.Mid(5));
+			}
+			else if (true == data.StartsWith(L"[방 목록]"))
+			{
+				TArray<FString> rooms;
+				data.Mid(8).ParseIntoArray(rooms, L"\r\n");
+				EnterRoomList(rooms);
+			}
+			else if (true == data.StartsWith(L"[유저목록]"))
+			{
+				TArray<FString> users;
+				data.Mid(6).ParseIntoArray(users, L"\r\n");
+				RefreshUserList(users);
+			}
 			else
 			{
-				AddChatLog(data);
+				TArray<FString> msgs;
+				data.ParseIntoArray(msgs, L"\r\n");
+				AddChatLog(msgs);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, data);
 			}
 		}
