@@ -6,7 +6,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 /**
- * 
+ *
  */
 class CHATCLIENT_API SC_CREATEROOM : public SCompoundWidget
 {
@@ -15,6 +15,6 @@ public:
 	{}
 	SLATE_END_ARGS()
 
-	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+		/** Constructs this widget with InArgs */
+		void Construct(const FArguments& InArgs);
 };

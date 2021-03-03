@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -21,7 +20,7 @@ using namespace std;
 #include "Blueprint/UserWidget.h"
 #include "CUI_TOTAL.h"
 
-#include "ChatSocket.generated.h"
+#include "ChatModule.generated.h"
 
 constexpr int32 BUF_SIZE = 2048;
 
@@ -35,6 +34,7 @@ enum class CMD_TYPE : uint8
 	USERLIST,
 	USERENTER,
 	USERLEAVE,
+	HELP,
 	SUFFIX
 };
 
@@ -48,7 +48,7 @@ public:
 	AChatModule();
 
 	///< 전체 메인 UI
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
+	UPROPERTY(EditDefaultsOnly, Category = "SubClass")
 		TAssetSubclassOf<class UCUI_TOTAL> UITotalClass;
 
 	/**
@@ -71,14 +71,19 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		UCUI_TOTAL* uiTotal;
 
+	void Disconnect();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 private:
-	FSocket* m_socket{ nullptr };
-	ANSICHAR m_buffer[BUF_SIZE];
-	ANSICHAR m_mbcsBuffer[BUF_SIZE];
-	atomic_bool m_online{ false };
-	TQueue<FString, EQueueMode::Spsc> m_recvQueue;
-	vector<thread> m_threads;
-	TArray<FString> m_commands;
+	FSocket* m_socket{ nullptr };						///< 언리얼 소켓
+	ANSICHAR m_buffer[BUF_SIZE];						///< recv 버퍼
+	ANSICHAR m_mbcsBuffer[BUF_SIZE];					///< WCS to MBCS 버퍼
+	atomic_bool m_online{ false };						///< 지금 온라인인가?
+	TQueue<FString, EQueueMode::Spsc> m_recvQueue;		///< 파싱한 문자열들을 저장하는 객체
+	vector<thread> m_threads;							///< 스레드 저장 컨테이너
+	TArray<FString> m_commands;							///< 서버와 통신에 필요한 커맨드들이 저장된 컨테이너
 
 	void recvThread();
 
@@ -87,7 +92,5 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
 };

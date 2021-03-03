@@ -1,13 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 // Sets default values
 AChatModule::AChatModule()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	//코드페이지 한글 명시
 	setlocale(LC_ALL, "Korean");
 }
 
@@ -19,24 +18,29 @@ bool AChatModule::ConnectServer(const FString& address, int32 port)
 		return false;
 
 	m_socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("default"), false);
-	FIPv4Address ip;
-	FIPv4Address::Parse(address, ip);
-
-	TSharedRef<FInternetAddr> addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-	addr->SetIp(ip.Value);
-	addr->SetPort(port);
-
-	bool connected = m_socket->Connect(*addr);
-	if (true == connected)
+	if (nullptr != m_socket)
 	{
-		m_online = true;
-		m_threads.emplace_back(&AChatModule::recvThread, this);
-	}
+		FIPv4Address ip;
+		FIPv4Address::Parse(address, ip);
 
-	return connected;
+		TSharedRef<FInternetAddr> addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
+		addr->SetIp(ip.Value);
+		addr->SetPort(port);
+
+		bool connected = m_socket->Connect(*addr);
+		if (true == connected)
+		{
+			m_online = true;
+			m_threads.emplace_back(&AChatModule::recvThread, this);
+		}
+
+		return connected;
+	}
+	return false;
 }
 void AChatModule::SendMsg(UPARAM(ref) const FString& msg)
 {
+	//서버로 메세지를 전송하는 함수
 	size_t convertedNum;
 	FString completeMsg = msg + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)];
 	wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
@@ -44,7 +48,9 @@ void AChatModule::SendMsg(UPARAM(ref) const FString& msg)
 	{
 		int sendLength = 0;
 		if (nullptr != m_socket)
+		{
 			m_socket->Send(reinterpret_cast<const uint8*>(m_mbcsBuffer), strlen(m_mbcsBuffer), sendLength);
+		}
 	}
 };
 
@@ -62,9 +68,11 @@ void AChatModule::recvThread()
 		if (nullptr != m_socket)
 		{
 			m_socket->Recv(buffer, BUF_SIZE, readLength);
+
 			buffer[readLength] = 0;
 			data.append(reinterpret_cast<const char*>(buffer));
 
+			//문자열 종결 시 처리부로 넘김.
 			while (true)
 			{
 				int32 detPos = data.find(suffix);
@@ -115,18 +123,36 @@ void AChatModule::BeginPlay()
 	m_commands.Add(L"[유저목록]");
 	m_commands.Add(L"[유저입장]");
 	m_commands.Add(L"[유저퇴장]");
+	m_commands.Add(L"[도움말]");
 	m_commands.Add(L"\r\n");
 }
 
 void AChatModule::BeginDestroy()
 {
 	Super::BeginDestroy();
-	m_online = false;
-	if (nullptr != m_socket)
-		m_socket->Close();
+	Disconnect();
 	for (auto& thread : m_threads)
 		thread.join();
 	m_threads.clear();
+}
+
+void AChatModule::Disconnect()
+{
+	if (true == m_online)
+	{
+		m_online = false;
+		if (nullptr != m_socket)
+		{
+			m_socket->Close();
+			m_socket = nullptr;
+
+			if (nullptr != uiTotal)
+			{
+				uiTotal->ChangeSceneTo(SC_TYPE::LOGIN);
+				uiTotal->PopError("서버와의 연결이 종료되었습니다.");
+			}
+		}
+	}
 }
 
 // Called every frame
@@ -183,6 +209,13 @@ void AChatModule::Tick(float DeltaTime)
 				//유저 퇴장 송신 시 목록 제거 및 메세지 출력
 				uiTotal->RemoveUserBox(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERLEAVE)].Len()));
 				uiTotal->AddChatLog(TArray<FString>{data});
+			}
+			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::HELP)]))
+			{
+				//도움말 송신 시 출력
+				//TArray<FString> comms;
+				//data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len()).ParseIntoArray(comms, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+				uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len() + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)].Len()));
 			}
 			else
 			{

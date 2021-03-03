@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "CUI_LOGIN.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 void UCUI_LOGIN::Login()
 {

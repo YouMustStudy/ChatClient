@@ -9,7 +9,7 @@
 #include "CUI_LOGIN.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CHATCLIENT_API UCUI_LOGIN : public UUserWidget
@@ -19,25 +19,25 @@ class CHATCLIENT_API UCUI_LOGIN : public UUserWidget
 public:
 	///< IP 입력박스
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* inputIPBox;
+		UEditableTextBox* inputIPBox;
 	///< ID 입력박스
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* inputIDBox;
+		UEditableTextBox* inputIDBox;
 	///< 로그인 버튼
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UButton* loginButton;
+		UButton* loginButton;
 
 	///< 매니저 객체.
 	UPROPERTY(BlueprintReadWrite)
-	class AChatModule* chatModule;
+		class AChatModule* chatModule;
 
 	/**
 	*@brief 입력값으로 서버에 로그인한다.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void Login();
+		void Login();
 protected:
 	virtual void NativeConstruct() override;
 
-	
+
 };

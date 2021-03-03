@@ -8,7 +8,7 @@
 #include "CUI_LOG.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CHATCLIENT_API UCUI_LOG : public UUserWidget
@@ -16,8 +16,9 @@ class CHATCLIENT_API UCUI_LOG : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	//채팅 로그를 표현할 객체.
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* chatLog;
+		UTextBlock* chatLog;
 
 protected:
 	virtual void NativeConstruct() override;

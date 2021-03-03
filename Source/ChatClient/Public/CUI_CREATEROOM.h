@@ -7,11 +7,11 @@
 #include "Components/EditableTextBox.h"
 #include "Components/SpinBox.h"
 #include "Components/Button.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 #include "CUI_CREATEROOM.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CHATCLIENT_API UCUI_CREATEROOM : public UUserWidget
@@ -45,7 +45,7 @@ protected:
 	*@brief 다시 방 목록으로 돌아가는 함수.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void HideCreateUI();
+		void HideCreateUI();
 
 	virtual void NativeConstruct() override;
 public:

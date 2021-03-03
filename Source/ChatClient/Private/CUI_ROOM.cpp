@@ -2,7 +2,7 @@
 
 
 #include "CUI_ROOM.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 void UCUI_ROOM::NativeConstruct()
 {
@@ -31,6 +31,7 @@ void UCUI_ROOM::JoinRoom()
 
 void UCUI_ROOM::SetName(const FString& name)
 {
+	//이름 설정
 	if (nullptr != roomText)
 		roomText->SetText(FText::FromString(name));
 }

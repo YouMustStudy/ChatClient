@@ -2,7 +2,7 @@
 #include "CUI_MAIN.h"
 #include "CUI_LOG.h"
 #include "CUI_USER.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 void UCUI_MAIN::RequestRoomList()
 {
@@ -25,12 +25,14 @@ void UCUI_MAIN::NativeConstruct()
 
 void UCUI_MAIN::SetRoomName(const FString& name)
 {
+	//이름 설정
 	if (nullptr != roomNameText)
 		roomNameText->SetText(FText::FromString(name));
 }
 
 void UCUI_MAIN::ClearInputMsgBox()
 {
+	//입력박스 초기화
 	if (nullptr != inputMsgBox)
 		inputMsgBox->SetText(FText::GetEmpty());
 }

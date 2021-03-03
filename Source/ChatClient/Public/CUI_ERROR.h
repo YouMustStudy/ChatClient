@@ -9,13 +9,13 @@
 #include "CUI_ERROR.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CHATCLIENT_API UCUI_ERROR : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	///< 에러가 출력될 텍스트창
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -30,13 +30,13 @@ public:
 	*param[in] errMsg 출력할 메세지
 	*/
 	UFUNCTION(BlueprintCallable)
-	void PopupError(const FString& errMsg);
+		void PopupError(const FString& errMsg);
 
 	/**
 	*@brief 팝업창을 끄는 함수.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void PopdownError();
+		void PopdownError();
 
 private:
 	void NativeConstruct() override;

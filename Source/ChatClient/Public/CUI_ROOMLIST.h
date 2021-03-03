@@ -10,13 +10,13 @@
 
 class AChatModule;
 /**
- * 
+ *
  */
 UCLASS()
 class CHATCLIENT_API UCUI_ROOMLIST : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	///< 방를 표시할 UI 객체
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
@@ -47,7 +47,7 @@ public:
 	*@param[in] chatModule 저장할 chatModule 포인터.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void SetChatModule(AChatModule* newChatModule);
+		void SetChatModule(AChatModule* newChatModule);
 
 	/**
 	*@brief 방목록 갱신을 요청하는 함수.

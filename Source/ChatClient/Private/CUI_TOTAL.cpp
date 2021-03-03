@@ -2,7 +2,7 @@
 
 
 #include "CUI_TOTAL.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 void UCUI_TOTAL::InitUI(AChatModule* cModule)
 {
@@ -44,12 +44,14 @@ void UCUI_TOTAL::ChangeSceneTo(SC_TYPE sc_type)
 
 void UCUI_TOTAL::PopError(const FString& msg)
 {
+	//에러 팝업
 	if (nullptr != uiError)
 		uiError->PopupError(msg);
 }
 
 void UCUI_TOTAL::EnterRoom(const FString& name)
 {
+	//채팅창 초기화 후 새 방 입장
 	if (nullptr != uiMain)
 	{
 		uiMain->ClearChatLog();
@@ -61,6 +63,7 @@ void UCUI_TOTAL::EnterRoom(const FString& name)
 
 void UCUI_TOTAL::EnterRoomList(const TArray<FString>& rooms)
 {
+	//방목록 초기화
 	if (nullptr != uiRoomList)
 	{
 		uiRoomList->RefreshRoom(rooms);
@@ -70,6 +73,7 @@ void UCUI_TOTAL::EnterRoomList(const TArray<FString>& rooms)
 
 void UCUI_TOTAL::RefreshUserBox(const TArray<FString>& users)
 {
+	//유저목록 갱신
 	if (nullptr != uiMain)
 	{
 		uiMain->RefreshUserBox(users);
@@ -78,6 +82,7 @@ void UCUI_TOTAL::RefreshUserBox(const TArray<FString>& users)
 
 void UCUI_TOTAL::AddUserBox(const FString& user)
 {
+	//유저목록에 유저 추가
 	if (nullptr != uiMain)
 	{
 		uiMain->AddUserBox(user);
@@ -86,6 +91,7 @@ void UCUI_TOTAL::AddUserBox(const FString& user)
 
 void UCUI_TOTAL::RemoveUserBox(const FString& user)
 {
+	//유저목록에 유저 삭제
 	if (nullptr != uiMain)
 	{
 		uiMain->RemoveUserBox(user);
@@ -94,6 +100,7 @@ void UCUI_TOTAL::RemoveUserBox(const FString& user)
 
 void UCUI_TOTAL::AddChatLog(const TArray<FString>& msgs)
 {
+	//채팅창에 채팅로그 추가
 	if (nullptr != uiMain)
 	{
 		for (const auto& msg : msgs)

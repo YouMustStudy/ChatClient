@@ -3,7 +3,7 @@
 #include "CUI_ROOMLIST.h"
 #include "CUI_ROOM.h"
 #include "CUI_CREATEROOM.h"
-#include "ChatSocket.h"
+#include "ChatModule.h"
 
 void UCUI_ROOMLIST::SetChatModule(AChatModule* newChatModule)
 {
