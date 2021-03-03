@@ -6,6 +6,7 @@
 
 void UCUI_MAIN::RequestRoomList()
 {
+	//방목록 갱신을 요청
 	static FString roomListCommand = L"/roomlist";
 	if (nullptr != chatModule)
 	{
@@ -26,6 +27,7 @@ void UCUI_MAIN::SendChat()
 {
 	if (nullptr != inputMsgBox)
 	{
+		//유저의 입력을 받아 서버에 전송.
 		FString msg = inputMsgBox->GetText().ToString();
 		if (false == msg.IsEmpty())
 		{
@@ -43,6 +45,7 @@ void UCUI_MAIN::SetInputMsgBox(const FString& msg)
 {
 	if (nullptr != inputMsgBox)
 	{
+		//주어진 문자열로 입력창을 초기화.
 		inputMsgBox->SetText(FText::FromString(msg));
 		inputMsgBox->SetKeyboardFocus();
 	}
@@ -52,6 +55,7 @@ void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg)
 {
 	if (nullptr != chatBox)
 	{
+		//채팅 로그가 MAX_CHAT_LOG를 넘어가면 맨 앞 객체를 삭제 후 삽입.
 		int32 chatLogCnt = chatBox->GetChildrenCount();
 		if (chatLogCnt >= MAX_CHAT_LOG)
 			chatBox->RemoveChildAt(0);
@@ -71,12 +75,14 @@ void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg)
 
 void UCUI_MAIN::ClearChatLog()
 {
+	//채팅로그를 초기화
 	if(nullptr != chatBox)
 		chatBox->ClearChildren();
 }
 
 void UCUI_MAIN::AddUserBox(const FString& user)
 {
+	//유저를 유저목록에 추가
 	if (nullptr != userBox)
 	{
 		if (false == userTable.Contains(user))
@@ -95,6 +101,7 @@ void UCUI_MAIN::AddUserBox(const FString& user)
 
 void UCUI_MAIN::RemoveUserBox(const FString& user)
 {
+	//유저를 유저목록에서 삭제
 	if (nullptr != userBox)
 	{
 		if (true == userTable.Contains(user))
@@ -110,8 +117,11 @@ void UCUI_MAIN::RefreshUserBox(UPARAM(ref) const TArray<FString>& users)
 {
 	if (nullptr != userBox)
 	{
+		//유저 목록을 초기화 한 후
 		userBox->ClearChildren();
 		userTable.Reset();
+
+		//입력값으로 유저목록 갱신
 		for (const auto& user : users)
 			AddUserBox(user);
 	}

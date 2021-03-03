@@ -43,12 +43,14 @@ void UCUI_ROOMLIST::RefreshRoom(const TArray<FString>& rooms)
 
 void UCUI_ROOMLIST::PopupCreateUI()
 {
+	//방 생성창을 종료
 	if (nullptr != uiCreateRoom)
 		uiCreateRoom->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UCUI_ROOMLIST::ChangeToMain()
 {
+	//메인화면으로 전환
 	if (nullptr != chatModule)
 		chatModule->ChangeToMain();
 }

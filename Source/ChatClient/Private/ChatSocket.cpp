@@ -11,12 +11,14 @@ AChatSocket::AChatSocket()
 	setlocale(LC_ALL, "Korean");
 }
 
-bool AChatSocket::ConnectServer()
+bool AChatSocket::ConnectServer(const FString& address, int32 port)
 {
-	m_socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("default"), false);
+	//포트범위 벗어나면 에러처리.
+	if (port < 0 ||
+		port >= 65536)
+		return false;
 
-	FString address = TEXT("127.0.0.1");
-	int32 port = 15600;
+	m_socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("default"), false);
 	FIPv4Address ip;
 	FIPv4Address::Parse(address, ip);
 
@@ -24,17 +26,13 @@ bool AChatSocket::ConnectServer()
 	addr->SetIp(ip.Value);
 	addr->SetPort(port);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Trying to connect.")));
-
 	bool connected = m_socket->Connect(*addr);
 	if (true == connected)
 	{
 		m_online = true;
+		m_quit = false;
 		m_threads.emplace_back(&AChatSocket::recvThread, this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Success connect.")));
 	}
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail connect.")));
 
 	return connected;
 }

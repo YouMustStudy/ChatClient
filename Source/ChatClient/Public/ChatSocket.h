@@ -34,7 +34,7 @@ public:
 	AChatSocket();
 
 	UFUNCTION(BlueprintCallable, Category = "Socket")
-	bool ConnectServer();
+	bool ConnectServer(const FString& address, int32 port);
 
 	UFUNCTION(BlueprintCallable, Category = "Socket")
 	void SendMsg(UPARAM(ref) const FString& msg);
@@ -68,6 +68,7 @@ private:
 	ANSICHAR m_buffer[BUF_SIZE];
 	ANSICHAR m_mbcsBuffer[BUF_SIZE];
 	atomic_bool m_online{ false };
+	atomic_bool m_quit{ false };
 	TQueue<FString, EQueueMode::Spsc> m_recvQueue;
 	vector<thread> m_threads;
 
