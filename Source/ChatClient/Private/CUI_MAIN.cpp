@@ -79,18 +79,21 @@ void UCUI_MAIN::AddUserBox(const FString& user)
 {
 	if (nullptr != userBox)
 	{
-		UCUI_USER* newUserUI = CreateWidget<UCUI_USER>(GetWorld(), UIUserClass.Get());
-		if (nullptr != newUserUI)
+		if (false == userTable.Contains(user))
 		{
-			newUserUI->uiMain = this;
-			newUserUI->SetName(user);
-			userTable.Emplace(user, newUserUI);
-			userBox->AddChild(newUserUI);
+			UCUI_USER* newUserUI = CreateWidget<UCUI_USER>(GetWorld(), UIUserClass.Get());
+			if (nullptr != newUserUI)
+			{
+				newUserUI->uiMain = this;
+				newUserUI->SetName(user);
+				userTable.Emplace(user, newUserUI);
+				userBox->AddChild(newUserUI);
+			}
 		}
 	}
 }
 
-void UCUI_MAIN::RemoveUserBox(FString& user)
+void UCUI_MAIN::RemoveUserBox(const FString& user)
 {
 	if (nullptr != userBox)
 	{

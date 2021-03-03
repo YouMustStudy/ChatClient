@@ -40,7 +40,7 @@ public:
 	void SendMsg(UPARAM(ref) const FString& msg);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void ChangeToLobby();
+	void ChangeToMain();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void AddChatLog(const TArray<FString> &msg);
@@ -56,6 +56,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void RefreshUserList(const TArray<FString>& users);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RemoveUserBox(const FString& user);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddUserBox(const FString& user);
 
 private:
 	FSocket* m_socket{ nullptr };

@@ -20,9 +20,11 @@ class CHATCLIENT_API UCUI_MAIN : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	/// 채팅 로그를 표시할 UI 객체
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
 	TAssetSubclassOf<class UCUI_LOG> UILogClass;
 
+	/// 접속자를 표시할 UI 객체
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
 	TAssetSubclassOf<class UCUI_USER> UIUserClass;
 
@@ -63,7 +65,7 @@ public:
 	void AddUserBox(const FString& user);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveUserBox(FString& user);
+	void RemoveUserBox(const FString& user);
 
 	UFUNCTION(BlueprintCallable)
 	void RefreshUserBox(UPARAM(ref) const TArray<FString>& users);

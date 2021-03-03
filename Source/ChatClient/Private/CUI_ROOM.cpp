@@ -7,11 +7,14 @@
 void UCUI_ROOM::NativeConstruct()
 {
 	Super::NativeConstruct();
-	joinButton->OnClicked.AddDynamic(this, &UCUI_ROOM::JoinRoom);
+	//입장 버튼에 함수 할당.
+	if(nullptr != joinButton)
+		joinButton->OnClicked.AddDynamic(this, &UCUI_ROOM::JoinRoom);
 }
 
 void UCUI_ROOM::JoinRoom()
 {
+	//방 이름 앞부분에서 인덱스 추출 후 입장 커맨드 전송.
 	FString roomName = roomText->GetText().ToString();
 	std::wregex indexParser(LR"(^\[([0-9]+)\].+)");
 	std::wcmatch wideMatch;
@@ -24,4 +27,10 @@ void UCUI_ROOM::JoinRoom()
 			chatModule->SendMsg(CreateRoomCommand);
 		}
 	}
+}
+
+void UCUI_ROOM::SetName(const FString& name)
+{
+	if (nullptr != roomText)
+		roomText->SetText(FText::FromString(name));
 }

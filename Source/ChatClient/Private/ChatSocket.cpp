@@ -108,7 +108,7 @@ void AChatSocket::Tick(float DeltaTime)
 			while (false == m_recvQueue.Dequeue(data)) {};
 			if (true == data.StartsWith(L"[로그인]"))
 			{
-				ChangeToLobby();
+				ChangeToMain();
 			}
 			else if (true == data.StartsWith(L"[에러]"))
 			{
@@ -129,6 +129,16 @@ void AChatSocket::Tick(float DeltaTime)
 				TArray<FString> users;
 				data.Mid(6).ParseIntoArray(users, L"\r\n");
 				RefreshUserList(users);
+			}
+			else if (true == data.StartsWith(L"[유저입장]"))
+			{
+				AddUserBox(data.Mid(6));
+				AddChatLog(TArray<FString>{data});
+			}
+			else if (true == data.StartsWith(L"[유저퇴장]"))
+			{
+				RemoveUserBox(data.Mid(6));
+				AddChatLog(TArray<FString>{data});
 			}
 			else
 			{
