@@ -38,11 +38,11 @@ bool AChatSocket::ConnectServer()
 
 	return connected;
 }
-void AChatSocket::SendMsg(UPARAM(ref) FString& msg)
+void AChatSocket::SendMsg(UPARAM(ref) const FString& msg)
 {
     size_t convertedNum;
-	msg.Append("\r\n");
-    wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *msg, BUF_SIZE);
+	FString completeMsg = msg + "\r\n";
+    wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
     if (0 != convertedNum)
     {
         int sendLength = 0;

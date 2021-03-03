@@ -37,7 +37,7 @@ public:
 	bool ConnectServer();
 
 	UFUNCTION(BlueprintCallable, Category = "Socket")
-	void SendMsg(UPARAM(ref) FString& msg);
+	void SendMsg(UPARAM(ref) const FString& msg);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeToLobby();

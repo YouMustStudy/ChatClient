@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
 	TAssetSubclassOf<class UCUI_LOG> UILogClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
+	TAssetSubclassOf<class UCUI_USER> UIUserClass;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* chatBox;
 
@@ -45,19 +48,31 @@ public:
 	class AChatSocket* chatModule;
 
 	UFUNCTION(BlueprintCallable)
-	void AddChatLog(FString& msg);
+	void SendChat();
 
 	UFUNCTION(BlueprintCallable)
-	void AddUserList(FString& user);
+	void SetInputMsgBox(const FString& msg);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveUserList(FString& user);
+	void AddChatLog(UPARAM(ref) const FString& msg);
 
 	UFUNCTION(BlueprintCallable)
-	void Refresh(TArray<FString> &user);
+	void ClearChatLog();
 
-	virtual void NativeConstruct() override;
+	UFUNCTION(BlueprintCallable)
+	void AddUserBox(const FString& user);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveUserBox(FString& user);
+
+	UFUNCTION(BlueprintCallable)
+	void RefreshUserBox(UPARAM(ref) const TArray<FString>& users);
+
+	UFUNCTION(BlueprintCallable)
+	void RequestRoomList();
 
 private:
+	virtual void NativeConstruct() override;
 
+	TMap<FString, UCUI_USER*> userTable;
 };
