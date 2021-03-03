@@ -42,23 +42,34 @@ UCLASS()
 class CHATCLIENT_API AChatModule : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AChatModule();
 
-	///< 방를 표시할 UI 객체
+	///< 전체 메인 UI
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
-	TAssetSubclassOf<class UCUI_TOTAL> UITotalClass;
+		TAssetSubclassOf<class UCUI_TOTAL> UITotalClass;
 
+	/**
+	*@brief 서버에 연결한다.
+	*param[in] address IP타입의 주소
+	*param[in] port 포트번호
+	*return 서버 연결 성공 여부.
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Socket")
-	bool ConnectServer(const FString& address, int32 port);
+		bool ConnectServer(const FString& address, int32 port);
 
+	/**
+	*@brief 서버에 메세지를 전송
+	*param[in] msg 보낼 메세지
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Socket")
-	void SendMsg(UPARAM(ref) const FString& msg);
+		void SendMsg(UPARAM(ref) const FString& msg);
 
+	///< 전체 메인 UI
 	UPROPERTY(BlueprintReadWrite)
-	UCUI_TOTAL* uiTotal;
+		UCUI_TOTAL* uiTotal;
 
 private:
 	FSocket* m_socket{ nullptr };
@@ -76,7 +87,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

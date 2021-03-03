@@ -37,41 +37,45 @@ bool AChatModule::ConnectServer(const FString& address, int32 port)
 }
 void AChatModule::SendMsg(UPARAM(ref) const FString& msg)
 {
-    size_t convertedNum;
+	size_t convertedNum;
 	FString completeMsg = msg + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)];
-    wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
-    if (0 != convertedNum)
-    {
-        int sendLength = 0;
-        m_socket->Send(reinterpret_cast<const uint8*>(m_mbcsBuffer), strlen(m_mbcsBuffer), sendLength);
-    }
+	wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
+	if (0 != convertedNum)
+	{
+		int sendLength = 0;
+		if (nullptr != m_socket)
+			m_socket->Send(reinterpret_cast<const uint8*>(m_mbcsBuffer), strlen(m_mbcsBuffer), sendLength);
+	}
 };
 
 void AChatModule::recvThread()
 {
 	TCHAR utf16buffer[BUF_SIZE];
-	size_t convertedNum=0;
+	size_t convertedNum = 0;
 	uint8 buffer[BUF_SIZE + 1];
 	string data;
 	char suffixStamp = 5;
 	string suffix = string("\r\n") + suffixStamp;
 	while (true == m_online)
 	{
-		int32 readLength= 0;
-		m_socket->Recv(buffer, BUF_SIZE, readLength);
-		buffer[readLength] = 0;
-		data.append(reinterpret_cast<const char*>(buffer));
-
-		while (true)
+		int32 readLength = 0;
+		if (nullptr != m_socket)
 		{
-			int32 detPos = data.find(suffix);
-			if (string::npos != detPos)
+			m_socket->Recv(buffer, BUF_SIZE, readLength);
+			buffer[readLength] = 0;
+			data.append(reinterpret_cast<const char*>(buffer));
+
+			while (true)
 			{
-				mbstowcs_s<BUF_SIZE>(&convertedNum, utf16buffer, data.substr(0, detPos).c_str(), BUF_SIZE);
-				m_recvQueue.Enqueue(utf16buffer);
-				data = data.substr(detPos + suffix.size());
+				int32 detPos = data.find(suffix);
+				if (string::npos != detPos)
+				{
+					mbstowcs_s<BUF_SIZE>(&convertedNum, utf16buffer, data.substr(0, detPos).c_str(), BUF_SIZE);
+					m_recvQueue.Enqueue(utf16buffer);
+					data = data.substr(detPos + suffix.size());
+				}
+				else break;
 			}
-			else break;
 		}
 	}
 }
@@ -87,8 +91,19 @@ void AChatModule::BeginPlay()
 		uiTotal = CreateWidget<UCUI_TOTAL>(GetWorld(), UITotalClass.Get());
 		if (nullptr != uiTotal)
 		{
+			//UI 생성
 			uiTotal->AddToViewport();
 			uiTotal->InitUI(this);
+
+			//포커스 설정
+			auto controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (nullptr != controller)
+			{
+				FInputModeUIOnly param;
+				param.SetWidgetToFocus(uiTotal->GetCachedWidget());
+				controller->SetInputMode(param);
+				controller->bShowMouseCursor = true;
+			}
 		}
 	}
 
@@ -105,10 +120,10 @@ void AChatModule::BeginPlay()
 
 void AChatModule::BeginDestroy()
 {
-    Super::BeginDestroy();
+	Super::BeginDestroy();
 	m_online = false;
-    if (nullptr != m_socket)
-        m_socket->Close();
+	if (nullptr != m_socket)
+		m_socket->Close();
 	for (auto& thread : m_threads)
 		thread.join();
 	m_threads.clear();
@@ -141,7 +156,7 @@ void AChatModule::Tick(float DeltaTime)
 			{
 				//방 입장 성공 시 메인화면으로 전환.
 				uiTotal->EnterRoom(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ROOMENTER)].Len()));
-				
+
 			}
 			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ROOMLIST)]))
 			{
