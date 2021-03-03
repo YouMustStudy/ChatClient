@@ -23,6 +23,5 @@ void UCUI_ROOM::JoinRoom()
 			FString CreateRoomCommand = L"/join " + FString(wideMatch[1].str().c_str());
 			chatModule->SendMsg(CreateRoomCommand);
 		}
-			
 	}
 }

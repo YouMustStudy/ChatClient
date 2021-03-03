@@ -2,6 +2,7 @@
 
 
 #include "CUI_CREATEROOM.h"
+#include "ChatSocket.h"
 
 void UCUI_CREATEROOM::ABCD()
 {
