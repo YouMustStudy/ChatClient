@@ -23,6 +23,18 @@ void UCUI_MAIN::NativeConstruct()
 		roomButton->OnClicked.AddDynamic(this, &UCUI_MAIN::RequestRoomList);
 }
 
+void UCUI_MAIN::SetRoomName(const FString& name)
+{
+	if (nullptr != roomNameText)
+		roomNameText->SetText(FText::FromString(name));
+}
+
+void UCUI_MAIN::ClearInputMsgBox()
+{
+	if (nullptr != inputMsgBox)
+		inputMsgBox->SetText(FText::GetEmpty());
+}
+
 void UCUI_MAIN::SendChat()
 {
 	if (nullptr != inputMsgBox)

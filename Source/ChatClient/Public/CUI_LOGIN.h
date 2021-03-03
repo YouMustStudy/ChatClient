@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -30,7 +29,8 @@ public:
 
 	///< 매니저 객체.
 	UPROPERTY(BlueprintReadWrite)
-	class AChatSocket* chatModule;
+	class AChatModule* chatModule;
+
 	/**
 	*@brief 입력값으로 서버에 로그인한다.
 	*/
@@ -38,4 +38,6 @@ public:
 	void Login();
 protected:
 	virtual void NativeConstruct() override;
+
+	
 };

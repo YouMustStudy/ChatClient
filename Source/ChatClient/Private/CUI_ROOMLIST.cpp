@@ -5,7 +5,7 @@
 #include "CUI_CREATEROOM.h"
 #include "ChatSocket.h"
 
-void UCUI_ROOMLIST::SetChatModule(AChatSocket* newChatModule)
+void UCUI_ROOMLIST::SetChatModule(AChatModule* newChatModule)
 {
 	//방목록과 방생성창의 매니저 모듈 할당.
 	this->chatModule = newChatModule;
@@ -52,7 +52,8 @@ void UCUI_ROOMLIST::ChangeToMain()
 {
 	//메인화면으로 전환
 	if (nullptr != chatModule)
-		chatModule->ChangeToMain();
+		if (nullptr != chatModule->uiTotal)
+			chatModule->uiTotal->ChangeSceneTo(SC_TYPE::MAIN);
 }
 
 void UCUI_ROOMLIST::NativeConstruct()

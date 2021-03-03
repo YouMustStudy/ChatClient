@@ -8,7 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "CUI_ROOMLIST.generated.h"
 
-class AChatSocket;
+class AChatModule;
 /**
  * 
  */
@@ -47,7 +47,7 @@ public:
 	*@param[in] chatModule 저장할 chatModule 포인터.
 	*/
 	UFUNCTION(BlueprintCallable)
-	void SetChatModule(AChatSocket* newChatModule);
+	void SetChatModule(AChatModule* newChatModule);
 
 	/**
 	*@brief 방목록 갱신을 요청하는 함수.
@@ -76,7 +76,7 @@ public:
 
 protected:
 	///< 매니저 모듈.
-	AChatSocket* chatModule;
+	AChatModule* chatModule;
 
 	void NativeConstruct() override;
 };

@@ -54,7 +54,21 @@ public:
 
 	///< 메인 모듈
 	UPROPERTY(BlueprintReadWrite)
-	class AChatSocket* chatModule;
+	class AChatModule* chatModule;
+
+	/**
+	*@brief 방제목을 설정하는 함수.
+	*@param[in] name 설정할 방 이름.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void SetRoomName(const FString& name);
+
+	/**
+	*@brief 방제목을 설정하는 함수.
+	*@param[in] name 설정할 방 이름.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ClearInputMsgBox();
 
 	/**
 	*@brief 입력값을 기반으로 채팅을 전송하는 함수.

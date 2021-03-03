@@ -19,19 +19,37 @@ using namespace std;
 #include "Sockets.h"
 #include "SocketSubsystem.h"
 #include "Blueprint/UserWidget.h"
+#include "CUI_TOTAL.h"
 
 #include "ChatSocket.generated.h"
 
 constexpr int32 BUF_SIZE = 2048;
 
+UENUM()
+enum class CMD_TYPE : uint8
+{
+	LOGIN,
+	ERROR,
+	ROOMENTER,
+	ROOMLIST,
+	USERLIST,
+	USERENTER,
+	USERLEAVE,
+	SUFFIX
+};
+
 UCLASS()
-class CHATCLIENT_API AChatSocket : public AActor
+class CHATCLIENT_API AChatModule : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AChatSocket();
+	AChatModule();
+
+	///< 방를 표시할 UI 객체
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
+	TAssetSubclassOf<class UCUI_TOTAL> UITotalClass;
 
 	UFUNCTION(BlueprintCallable, Category = "Socket")
 	bool ConnectServer(const FString& address, int32 port);
@@ -39,41 +57,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Socket")
 	void SendMsg(UPARAM(ref) const FString& msg);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ChangeToMain();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void AddChatLog(const TArray<FString> &msg);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void AddErrorLog(const FString& msg);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void EnterRoom(const FString& msg);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void EnterRoomList(const TArray<FString> &rooms);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void RefreshUserList(const TArray<FString>& users);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void RemoveUserBox(const FString& user);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void AddUserBox(const FString& user);
+	UPROPERTY(BlueprintReadWrite)
+	UCUI_TOTAL* uiTotal;
 
 private:
 	FSocket* m_socket{ nullptr };
 	ANSICHAR m_buffer[BUF_SIZE];
 	ANSICHAR m_mbcsBuffer[BUF_SIZE];
 	atomic_bool m_online{ false };
-	atomic_bool m_quit{ false };
 	TQueue<FString, EQueueMode::Spsc> m_recvQueue;
 	vector<thread> m_threads;
+	TArray<FString> m_commands;
 
 	void recvThread();
-
 
 protected:
 	// Called when the game starts or when spawned

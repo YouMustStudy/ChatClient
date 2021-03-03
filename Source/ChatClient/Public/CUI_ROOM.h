@@ -28,7 +28,7 @@ public:
 
 	///< 메인 매니저 객체.
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	class AChatSocket* chatModule;
+	class AChatModule* chatModule;
 
 	/**
 	*@brief 방에 입장하는 커맨드를 송신하는 함수.

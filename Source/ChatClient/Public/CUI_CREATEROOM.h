@@ -51,5 +51,5 @@ protected:
 public:
 	///< ¸Å´ÏÀú °´Ã¼.
 	UPROPERTY(BlueprintReadWrite)
-		AChatSocket* chatModule;
+		AChatModule* chatModule;
 };
