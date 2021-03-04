@@ -130,6 +130,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InputMsgBoxOnTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
 
+	/**
+	*@brief 메세지 입력창에서 글자수를 제한하는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+		void InputMsgBoxOnTextChanged(const FText& InText);
+
 private:
 	virtual void NativeConstruct() override;
 

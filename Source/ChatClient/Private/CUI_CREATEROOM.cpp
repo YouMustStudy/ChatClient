@@ -51,6 +51,19 @@ void UCUI_CREATEROOM::HideCreateUI()
 	}
 }
 
+void UCUI_CREATEROOM::LimitTextLengthOnTextChanged(const FText& InText)
+{
+	//텍스트 길이가 MAX_LENGTH값을 넘어가면 컷.
+	static const int MAX_LENGTH = 20;
+	FString textMsg = InText.ToString();
+	if (MAX_LENGTH < textMsg.Len())
+	{
+		textMsg.RemoveAt(textMsg.Len() - 1);
+		if (nullptr != roomNameInputBox)
+			roomNameInputBox->SetText(FText::FromString(textMsg));
+	}
+}
+
 void UCUI_CREATEROOM::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -58,4 +71,6 @@ void UCUI_CREATEROOM::NativeConstruct()
 		enterButton->OnClicked.AddDynamic(this, &UCUI_CREATEROOM::RequestCreateRoom);
 	if (nullptr != returnButton)
 		returnButton->OnClicked.AddDynamic(this, &UCUI_CREATEROOM::HideCreateUI);
+	if (nullptr != roomNameInputBox)
+		roomNameInputBox->OnTextChanged.AddDynamic(this, &UCUI_CREATEROOM::LimitTextLengthOnTextChanged);
 }

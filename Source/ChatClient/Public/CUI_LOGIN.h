@@ -36,6 +36,19 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable)
 		void Login();
+
+	/**
+	*@brief 아이디 입력박스의 입력수를 제한하는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void LimitTextLengthInputIDBoxOnTextChanged(const FText& InText);
+
+	/**
+	*@brief IP 입력박스의 입력수를 제한하는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void LimitTextLengthInputIPBoxOnTextChanged(const FText& InText);
+
 protected:
 	virtual void NativeConstruct() override;
 

@@ -23,6 +23,19 @@ void UCUI_MAIN::InputMsgBoxOnTextCommitted(const FText& InText, ETextCommit::Typ
 	}
 }
 
+void UCUI_MAIN::InputMsgBoxOnTextChanged(const FText& InText)
+{
+	//텍스트 길이가 MAX_LENGTH값을 넘어가면 컷.
+	static const int MAX_LENGTH = 40;
+	FString textMsg = InText.ToString();
+	if (MAX_LENGTH < textMsg.Len())
+	{
+		textMsg.RemoveAt(textMsg.Len() - 1);
+		if (nullptr != inputMsgBox)
+			inputMsgBox->SetText(FText::FromString(textMsg));
+	}
+}
+
 void UCUI_MAIN::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -34,7 +47,10 @@ void UCUI_MAIN::NativeConstruct()
 	if(nullptr != roomButton)
 		roomButton->OnClicked.AddDynamic(this, &UCUI_MAIN::RequestRoomList);
 	if (nullptr != inputMsgBox)
+	{
 		inputMsgBox->OnTextCommitted.AddDynamic(this, &UCUI_MAIN::InputMsgBoxOnTextCommitted);
+		inputMsgBox->OnTextChanged.AddDynamic(this, &UCUI_MAIN::InputMsgBoxOnTextChanged);
+	}
 }
 
 void UCUI_MAIN::SetRoomName(const FString& name)

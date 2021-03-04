@@ -30,4 +30,34 @@ void UCUI_LOGIN::NativeConstruct()
 	Super::NativeConstruct();
 	if (nullptr != loginButton)
 		loginButton->OnClicked.AddDynamic(this, &UCUI_LOGIN::Login);
+	if (nullptr != inputIDBox)
+		inputIDBox->OnTextChanged.AddDynamic(this, &UCUI_LOGIN::LimitTextLengthInputIDBoxOnTextChanged);
+	if (nullptr != inputIPBox)
+		inputIPBox->OnTextChanged.AddDynamic(this, &UCUI_LOGIN::LimitTextLengthInputIPBoxOnTextChanged);
+}
+
+void UCUI_LOGIN::LimitTextLengthInputIDBoxOnTextChanged(const FText& InText)
+{
+	//텍스트 길이가 MAX_LENGTH값을 넘어가면 컷.
+	static const int MAX_LENGTH = 20;
+	FString textMsg = InText.ToString();
+	if (MAX_LENGTH < textMsg.Len())
+	{
+		textMsg.RemoveAt(textMsg.Len() - 1);
+		if (nullptr != inputIDBox)
+			inputIDBox->SetText(FText::FromString(textMsg));
+	}
+}
+
+void UCUI_LOGIN::LimitTextLengthInputIPBoxOnTextChanged(const FText& InText)
+{
+	//텍스트 길이가 MAX_LENGTH값을 넘어가면 컷.
+	static const int MAX_LENGTH = 30;
+	FString textMsg = InText.ToString();
+	if (MAX_LENGTH < textMsg.Len())
+	{
+		textMsg.RemoveAt(textMsg.Len() - 1);
+		if (nullptr != inputIPBox)
+			inputIPBox->SetText(FText::FromString(textMsg));
+	}
 }

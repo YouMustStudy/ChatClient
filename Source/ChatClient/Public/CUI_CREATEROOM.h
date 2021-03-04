@@ -50,6 +50,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void HideCreateUI();
 
+	/**
+	*@brief 키보드 입력수를 제한하는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void LimitTextLengthOnTextChanged(const FText& InText);
+
 	virtual void NativeConstruct() override;
 public:
 	///< 매니저 객체.
