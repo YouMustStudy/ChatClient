@@ -74,6 +74,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeToMain();
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 protected:
 	///< 매니저 모듈.
 	AChatModule* chatModule;

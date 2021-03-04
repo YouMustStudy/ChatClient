@@ -22,7 +22,7 @@ void UCUI_CREATEROOM::RequestCreateRoom()
 			if (nullptr != chatModule)
 				chatModule->SendMsg(CreateRoomCommand);
 			roomNameInputBox->SetText(FText::GetEmpty());
-			SetVisibility(ESlateVisibility::Collapsed);
+			HideCreateUI();
 		}
 	}
 }

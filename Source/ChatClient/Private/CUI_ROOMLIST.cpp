@@ -56,6 +56,20 @@ void UCUI_ROOMLIST::ChangeToMain()
 			chatModule->uiTotal->ChangeSceneTo(SC_TYPE::MAIN);
 }
 
+void UCUI_ROOMLIST::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	static float tickTime = 0;
+	constexpr float refreshTime = 3.0; //3sec.
+
+	tickTime += InDeltaTime;
+	if (refreshTime <= tickTime)
+	{
+		tickTime -= refreshTime;
+		RequestRefreshRoom();
+	}
+}
+
 void UCUI_ROOMLIST::NativeConstruct()
 {
 	Super::NativeConstruct();
