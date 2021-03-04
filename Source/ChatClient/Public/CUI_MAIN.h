@@ -10,15 +10,16 @@
 #include "Components/Button.h"
 #include "CUI_MAIN.generated.h"
 
-constexpr int32 MAX_CHAT_LOG = 100;
+
 /**
  *
  */
+constexpr int32 MAX_CHAT_LOG = 100;
 UCLASS()
 class CHATCLIENT_API UCUI_MAIN : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 public:
 	///< 채팅 로그를 표시할 UI 객체
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
@@ -88,7 +89,7 @@ public:
 	*@param[in] msg 추가할 문자열.
 	*/
 	UFUNCTION(BlueprintCallable)
-		void AddChatLog(UPARAM(ref) const FString& msg);
+		void AddChatLog(UPARAM(ref) const FString& msg, FLinearColor color = FLinearColor(0, 0, 0, 1.0));
 
 	/**
 	*@brief 채팅창을 초기화하는 함수.

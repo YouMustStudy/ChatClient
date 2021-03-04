@@ -98,13 +98,13 @@ void UCUI_TOTAL::RemoveUserBox(const FString& user)
 	}
 }
 
-void UCUI_TOTAL::AddChatLog(const TArray<FString>& msgs)
+void UCUI_TOTAL::AddChatLog(const TArray<FString>& msgs, FLinearColor color)
 {
 	//채팅창에 채팅로그 추가
 	if (nullptr != uiMain)
 	{
 		for (const auto& msg : msgs)
-			uiMain->AddChatLog(msg);
+			uiMain->AddChatLog(msg, color);
 	}
 }
 

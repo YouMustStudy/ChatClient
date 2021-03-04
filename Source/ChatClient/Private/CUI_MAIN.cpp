@@ -65,7 +65,7 @@ void UCUI_MAIN::SetInputMsgBox(const FString& msg)
 	}
 }
 
-void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg)
+void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg, FLinearColor color)
 {
 	if (nullptr != chatBox)
 	{
@@ -80,6 +80,8 @@ void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg)
 			int32 curOffset = chatBox->GetScrollOffset();
 			int32 endOffset = chatBox->GetScrollOffsetOfEnd();
 			UILog->chatLog->SetText(FText::FromString(msg));
+			FSlateColor clr{ color };
+			UILog->chatLog->SetColorAndOpacity(clr);
 			chatBox->AddChild(UILog);
 			if (curOffset == endOffset)
 				chatBox->ScrollToEnd();

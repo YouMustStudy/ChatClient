@@ -103,7 +103,7 @@ public:
 	*@param[in] msg 추가할 메세지들
 	*/
 	UFUNCTION(BlueprintCallable)
-		void AddChatLog(const TArray<FString>& msgs);
+		void AddChatLog(const TArray<FString>& msgs, FLinearColor color = FLinearColor(0, 0, 0, 1.0));
 
 protected:
 	virtual void NativeConstruct() override;

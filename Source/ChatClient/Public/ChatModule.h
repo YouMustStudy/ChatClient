@@ -35,6 +35,7 @@ enum class CMD_TYPE : uint8
 	USERENTER,
 	USERLEAVE,
 	HELP,
+	MSG,
 	SUFFIX
 };
 

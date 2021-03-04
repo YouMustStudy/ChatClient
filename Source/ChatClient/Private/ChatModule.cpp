@@ -124,6 +124,7 @@ void AChatModule::BeginPlay()
 	m_commands.Add(L"[유저입장]");
 	m_commands.Add(L"[유저퇴장]");
 	m_commands.Add(L"[도움말]");
+	m_commands.Add(L"[메세지]");
 	m_commands.Add(L"\r\n");
 }
 
@@ -213,9 +214,14 @@ void AChatModule::Tick(float DeltaTime)
 			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::HELP)]))
 			{
 				//도움말 송신 시 출력
-				//TArray<FString> comms;
-				//data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len()).ParseIntoArray(comms, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
 				uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len() + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)].Len()));
+			}
+			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::MSG)]))
+			{
+				//귓속말 출력
+				TArray<FString> msgs;
+				data.ParseIntoArray(msgs, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+				uiTotal->AddChatLog(msgs, FLinearColor(0.5, 0.5, 1.0, 1.0));
 			}
 			else
 			{
