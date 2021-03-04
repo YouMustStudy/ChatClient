@@ -27,9 +27,28 @@ void UCUI_CREATEROOM::RequestCreateRoom()
 	}
 }
 
+void UCUI_CREATEROOM::Popup()
+{
+	if (false == isPop)
+	{
+		if (nullptr != roomNameInputBox)
+			roomNameInputBox->SetText(FText::GetEmpty());
+		if (nullptr != roomNumberBox)
+		{
+			roomNumberBox->SetValue(roomNumberBox->GetMinValue());
+		}
+		SetVisibility(ESlateVisibility::Visible);
+		isPop = true;
+	}
+}
+
 void UCUI_CREATEROOM::HideCreateUI()
 {
-	SetVisibility(ESlateVisibility::Collapsed);
+	if (true == isPop)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+		isPop = false;
+	}
 }
 
 void UCUI_CREATEROOM::NativeConstruct()

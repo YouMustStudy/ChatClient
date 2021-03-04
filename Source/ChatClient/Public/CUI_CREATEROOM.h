@@ -18,6 +18,9 @@ class CHATCLIENT_API UCUI_CREATEROOM : public UUserWidget
 {
 	GENERATED_BODY()
 
+private:
+	bool isPop{false};
+
 protected:
 	///< 방의 최대인원수를 결정하는 SpinBox
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -52,4 +55,10 @@ public:
 	///< 매니저 객체.
 	UPROPERTY(BlueprintReadWrite)
 		AChatModule* chatModule;
+
+	/**
+	*@brief 방 생성 UI를 띄우는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+		void Popup();
 };

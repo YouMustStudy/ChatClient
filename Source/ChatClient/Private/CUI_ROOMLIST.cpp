@@ -45,7 +45,7 @@ void UCUI_ROOMLIST::PopupCreateUI()
 {
 	//방 생성창을 종료
 	if (nullptr != uiCreateRoom)
-		uiCreateRoom->SetVisibility(ESlateVisibility::Visible);
+		uiCreateRoom->Popup();
 }
 
 void UCUI_ROOMLIST::ChangeToMain()
