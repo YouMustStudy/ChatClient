@@ -26,6 +26,9 @@ void UCUI_MAIN::InputMsgBoxOnTextCommitted(const FText& InText, ETextCommit::Typ
 void UCUI_MAIN::NativeConstruct()
 {
 	Super::NativeConstruct();
+	UserUIClass = ConstructorHelpersInternal::FindOrLoadClass(UserUIPath, UUserWidget::StaticClass());
+	LogUIClass = ConstructorHelpersInternal::FindOrLoadClass(LogUIPath, UUserWidget::StaticClass());
+
 	if(nullptr != sendButton)
 		sendButton->OnClicked.AddDynamic(this, &UCUI_MAIN::SendChat);
 	if(nullptr != roomButton)
@@ -85,17 +88,20 @@ void UCUI_MAIN::AddChatLog(UPARAM(ref) const FString& msg, FLinearColor color)
 		if (chatLogCnt >= MAX_CHAT_LOG)
 			chatBox->RemoveChildAt(0);
 
-		UCUI_LOG* UILog = CreateWidget<UCUI_LOG>(GetWorld(), UILogClass.Get());
-		if (nullptr != UILog)
+		if (nullptr != UILogClass)
 		{
-			int32 curOffset = chatBox->GetScrollOffset();
-			int32 endOffset = chatBox->GetScrollOffsetOfEnd();
-			UILog->chatLog->SetText(FText::FromString(msg));
-			FSlateColor clr{ color };
-			UILog->chatLog->SetColorAndOpacity(clr);
-			chatBox->AddChild(UILog);
-			if (curOffset == endOffset)
-				chatBox->ScrollToEnd();
+			UCUI_LOG* UILog = CreateWidget<UCUI_LOG>(GetWorld(), LogUIClass);
+			if (nullptr != UILog)
+			{
+				int32 curOffset = chatBox->GetScrollOffset();
+				int32 endOffset = chatBox->GetScrollOffsetOfEnd();
+				UILog->chatLog->SetText(FText::FromString(msg));
+				FSlateColor clr{ color };
+				UILog->chatLog->SetColorAndOpacity(clr);
+				chatBox->AddChild(UILog);
+				if (curOffset == endOffset)
+					chatBox->ScrollToEnd();
+			}
 		}
 	}
 }
@@ -114,13 +120,16 @@ void UCUI_MAIN::AddUserBox(const FString& user)
 	{
 		if (false == userTable.Contains(user))
 		{
-			UCUI_USER* newUserUI = CreateWidget<UCUI_USER>(GetWorld(), UIUserClass.Get());
-			if (nullptr != newUserUI)
+			if (nullptr != UserUIClass)
 			{
-				newUserUI->uiMain = this;
-				newUserUI->SetName(user);
-				userTable.Emplace(user, newUserUI);
-				userBox->AddChild(newUserUI);
+				UCUI_USER* newUserUI = CreateWidget<UCUI_USER>(GetWorld(), UserUIClass);
+				if (nullptr != newUserUI)
+				{
+					newUserUI->uiMain = this;
+					newUserUI->SetName(user);
+					userTable.Emplace(user, newUserUI);
+					userBox->AddChild(newUserUI);
+				}
 			}
 		}
 	}

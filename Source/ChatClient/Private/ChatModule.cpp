@@ -67,7 +67,8 @@ void AChatModule::recvThread()
 		int32 readLength = 0;
 		if (nullptr != m_socket)
 		{
-			m_socket->Recv(buffer, BUF_SIZE, readLength);
+			if (false == m_socket->Recv(buffer, BUF_SIZE, readLength))
+				return;
 
 			buffer[readLength] = 0;
 			data.append(reinterpret_cast<const char*>(buffer));
@@ -96,7 +97,9 @@ void AChatModule::BeginPlay()
 	//ui생성 후 등록
 	if (nullptr == uiTotal)
 	{
-		uiTotal = CreateWidget<UCUI_TOTAL>(GetWorld(), UITotalClass.Get());
+		FString path = FString("/Game/UI/UI_TOTAL.UI_TOTAL_C");
+		UClass* TotalClass = ConstructorHelpersInternal::FindOrLoadClass(path, UUserWidget::StaticClass());
+		uiTotal = CreateWidget<UCUI_TOTAL>(GetWorld(), TotalClass);
 		if (nullptr != uiTotal)
 		{
 			//UI 생성

@@ -18,10 +18,6 @@ class CHATCLIENT_API UCUI_ROOMLIST : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	///< 방를 표시할 UI 객체
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SubClass")
-		TAssetSubclassOf<class UCUI_ROOM> UIRoomClass;
-
 	///< 돌아가기 버튼
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		UButton* returnButton;
@@ -81,4 +77,9 @@ protected:
 	AChatModule* chatModule;
 
 	void NativeConstruct() override;
+
+private:
+	///< UI 경로
+	FString RoomUIPath{ "/Game/UI/UI_ROOM.UI_ROOM_C" };
+	UClass* RoomUIClass;
 };

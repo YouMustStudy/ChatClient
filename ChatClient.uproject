@@ -15,9 +15,5 @@
 				"UMG"
 			]
 		}
-	],
-	"TargetPlatforms": [
-		"AllDesktop",
-		"Android"
 	]
 }

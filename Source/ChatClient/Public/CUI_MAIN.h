@@ -135,4 +135,10 @@ private:
 
 	///< 유저목록을 관리하는 테이블.
 	TMap<FString, UCUI_USER*> userTable;
+
+	///< UI 경로
+	FString UserUIPath{ "/Game/UI/UI_USER.UI_USER_C" };
+	UClass* UserUIClass;
+	FString LogUIPath{ "/Game/UI/UI_LOG.UI_LOG_C" };
+	UClass* LogUIClass;
 };

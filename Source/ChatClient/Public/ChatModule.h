@@ -48,10 +48,6 @@ public:
 	// Sets default values for this actor's properties
 	AChatModule();
 
-	///< 전체 메인 UI
-	UPROPERTY(EditDefaultsOnly, Category = "SubClass")
-		TAssetSubclassOf<class UCUI_TOTAL> UITotalClass;
-
 	/**
 	*@brief 서버에 연결한다.
 	*param[in] address IP타입의 주소

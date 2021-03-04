@@ -30,12 +30,15 @@ void UCUI_ROOMLIST::RefreshRoom(const TArray<FString>& rooms)
 		for (auto& room : rooms)
 		{
 			//입력값을 기반으로 새 방들을 생성한다.
-			UCUI_ROOM* newRoomEntity = CreateWidget<UCUI_ROOM>(GetWorld(), UIRoomClass.Get());
-			if (nullptr != newRoomEntity)
+			if (nullptr != RoomUIClass)
 			{
-				newRoomEntity->SetName(room);
-				newRoomEntity->chatModule = chatModule;
-				roomList->AddChild(newRoomEntity);
+				UCUI_ROOM* newRoomEntity = CreateWidget<UCUI_ROOM>(GetWorld(), RoomUIClass);
+				if (nullptr != newRoomEntity)
+				{
+					newRoomEntity->SetName(room);
+					newRoomEntity->chatModule = chatModule;
+					roomList->AddChild(newRoomEntity);
+				}
 			}
 		}
 	}
@@ -73,6 +76,8 @@ void UCUI_ROOMLIST::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 void UCUI_ROOMLIST::NativeConstruct()
 {
 	Super::NativeConstruct();
+	RoomUIClass = ConstructorHelpersInternal::FindOrLoadClass(RoomUIPath, UUserWidget::StaticClass());
+
 	//버튼에 함수 할당.
 	if (nullptr != createButton)
 		createButton->OnClicked.AddDynamic(this, &UCUI_ROOMLIST::PopupCreateUI);
