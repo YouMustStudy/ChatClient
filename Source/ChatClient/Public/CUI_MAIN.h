@@ -124,6 +124,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RequestRoomList();
 
+	/**
+	*@brief 메세지 입력창에서 엔터 시 호출되는 함수.
+	*/
+	UFUNCTION(BlueprintCallable)
+		void InputMsgBoxOnTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
+
 private:
 	virtual void NativeConstruct() override;
 

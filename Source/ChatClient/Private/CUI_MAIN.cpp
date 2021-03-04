@@ -14,6 +14,15 @@ void UCUI_MAIN::RequestRoomList()
 	}
 }
 
+void UCUI_MAIN::InputMsgBoxOnTextCommitted(const FText& InText, ETextCommit::Type InCommitType)
+{
+	if (ETextCommit::Type::OnEnter == InCommitType)
+	{
+		SendChat();
+		inputMsgBox->SetKeyboardFocus();
+	}
+}
+
 void UCUI_MAIN::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -21,6 +30,8 @@ void UCUI_MAIN::NativeConstruct()
 		sendButton->OnClicked.AddDynamic(this, &UCUI_MAIN::SendChat);
 	if(nullptr != roomButton)
 		roomButton->OnClicked.AddDynamic(this, &UCUI_MAIN::RequestRoomList);
+	if (nullptr != inputMsgBox)
+		inputMsgBox->OnTextCommitted.AddDynamic(this, &UCUI_MAIN::InputMsgBoxOnTextCommitted);
 }
 
 void UCUI_MAIN::SetRoomName(const FString& name)
