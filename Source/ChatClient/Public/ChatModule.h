@@ -27,7 +27,8 @@ constexpr int32 BUF_SIZE = 2048;
 UENUM()
 enum class CMD_TYPE : uint8
 {
-	LOGIN,
+	SERVEROFFLINE,
+	LOGINERROR,
 	ERROR,
 	ROOMENTER,
 	ROOMLIST,

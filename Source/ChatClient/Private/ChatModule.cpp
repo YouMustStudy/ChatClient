@@ -33,6 +33,10 @@ bool AChatModule::ConnectServer(const FString& address, int32 port)
 			m_online = true;
 			m_threads.emplace_back(&AChatModule::recvThread, this);
 		}
+		else
+		{
+			m_recvQueue.Enqueue(FString(L"[로그인에러]서버에 연결할 수 없습니다."));
+		}
 
 		return connected;
 	}
@@ -68,7 +72,11 @@ void AChatModule::recvThread()
 		if (nullptr != m_socket)
 		{
 			if (false == m_socket->Recv(buffer, BUF_SIZE, readLength))
+			{
+				m_recvQueue.Enqueue(FString(L"[서버종료]"));
 				return;
+			}
+
 
 			buffer[readLength] = 0;
 			data.append(reinterpret_cast<const char*>(buffer));
@@ -119,7 +127,8 @@ void AChatModule::BeginPlay()
 	}
 
 	//커맨드에 해당되는 문자열 생성.
-	m_commands.Add(L"[로그인]");
+	m_commands.Add(L"[서버종료]");
+	m_commands.Add(L"[로그인에러]");
 	m_commands.Add(L"[에러]");
 	m_commands.Add(L"[방입장]");
 	m_commands.Add(L"[방 목록]");
@@ -135,9 +144,6 @@ void AChatModule::BeginDestroy()
 {
 	Super::BeginDestroy();
 	Disconnect();
-	for (auto& thread : m_threads)
-		thread.join();
-	m_threads.clear();
 }
 
 void AChatModule::Disconnect()
@@ -153,9 +159,12 @@ void AChatModule::Disconnect()
 			if (nullptr != uiTotal)
 			{
 				uiTotal->ChangeSceneTo(SC_TYPE::LOGIN);
-				uiTotal->PopError("서버와의 연결이 종료되었습니다.");
+				uiTotal->PopError(L"서버와의 연결이 종료되었습니다.");
 			}
 		}
+		for (auto& thread : m_threads)
+			thread.join();
+		m_threads.clear();
 	}
 }
 
@@ -163,76 +172,78 @@ void AChatModule::Disconnect()
 void AChatModule::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (true == m_online)
+	FString data;
+	while (false == m_recvQueue.IsEmpty())
 	{
-		FString data;
-		while (false == m_recvQueue.IsEmpty())
+		if (nullptr == uiTotal) continue;
+
+		while (false == m_recvQueue.Dequeue(data)) {};
+
+		if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::LOGINERROR)]))
 		{
-			if (nullptr == uiTotal) continue;
-
-			while (false == m_recvQueue.Dequeue(data)) {};
-
-			if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::LOGIN)]))
-			{
-				//로그인 성공 시 메인화면으로 전환.
-				uiTotal->ChangeSceneTo(SC_TYPE::MAIN);
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ERROR)]))
-			{
-				//에러메세지 수신 시 에러창 팝업
-				uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ERROR)].Len()));
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ROOMENTER)]))
-			{
-				//방 입장 성공 시 메인화면으로 전환.
-				uiTotal->EnterRoom(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ROOMENTER)].Len()));
-
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ROOMLIST)]))
-			{
-				//방목록 수신 시 갱신 및 방목록 화면으로 전환
-				TArray<FString> rooms;
-				data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ROOMLIST)].Len()).ParseIntoArray(rooms, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
-				uiTotal->EnterRoomList(rooms);
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERLIST)]))
-			{
-				//유저목록 수신 시 목록 갱신
-				TArray<FString> users;
-				data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERLIST)].Len()).ParseIntoArray(users, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
-				uiTotal->RefreshUserBox(users);
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERENTER)]))
-			{
-				//유저 입장 송신 시 목록 추가 및 메세지 출력
-				uiTotal->AddUserBox(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERENTER)].Len()));
-				uiTotal->AddChatLog(TArray<FString>{data});
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERLEAVE)]))
-			{
-				//유저 퇴장 송신 시 목록 제거 및 메세지 출력
-				uiTotal->RemoveUserBox(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERLEAVE)].Len()));
-				uiTotal->AddChatLog(TArray<FString>{data});
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::HELP)]))
-			{
-				//도움말 송신 시 출력
-				uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len() + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)].Len()));
-			}
-			else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::MSG)]))
-			{
-				//귓속말 출력
-				TArray<FString> msgs;
-				data.ParseIntoArray(msgs, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
-				uiTotal->AddChatLog(msgs, FLinearColor(0.5, 0.5, 1.0, 1.0));
-			}
-			else
-			{
-				//채팅메세지 출력
-				TArray<FString> msgs;
-				data.ParseIntoArray(msgs, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
-				uiTotal->AddChatLog(msgs);
-			}
+			//로그인 실패 시 연결 종료 후 에러 팝업
+			Disconnect();
+			uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::LOGINERROR)].Len()));
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::SERVEROFFLINE)]))
+		{
+			//서버 연결 끊겼을 시 처리
+			Disconnect();
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ERROR)]))
+		{
+			//에러메세지 수신 시 에러창 팝업
+			uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ERROR)].Len()));
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ROOMENTER)]))
+		{
+			//방 입장 성공 시 메인화면으로 전환.
+			uiTotal->EnterRoom(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ROOMENTER)].Len()));
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::ROOMLIST)]))
+		{
+			//방목록 수신 시 갱신 및 방목록 화면으로 전환
+			TArray<FString> rooms;
+			data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::ROOMLIST)].Len()).ParseIntoArray(rooms, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+			uiTotal->EnterRoomList(rooms);
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERLIST)]))
+		{
+			//유저목록 수신 시 목록 갱신
+			TArray<FString> users;
+			data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERLIST)].Len()).ParseIntoArray(users, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+			uiTotal->RefreshUserBox(users);
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERENTER)]))
+		{
+			//유저 입장 송신 시 목록 추가 및 메세지 출력
+			uiTotal->AddUserBox(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERENTER)].Len()));
+			uiTotal->AddChatLog(TArray<FString>{data});
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::USERLEAVE)]))
+		{
+			//유저 퇴장 송신 시 목록 제거 및 메세지 출력
+			uiTotal->RemoveUserBox(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::USERLEAVE)].Len()));
+			uiTotal->AddChatLog(TArray<FString>{data});
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::HELP)]))
+		{
+			//도움말 송신 시 출력
+			uiTotal->PopError(data.Mid(m_commands[static_cast<uint8>(CMD_TYPE::HELP)].Len() + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)].Len()));
+		}
+		else if (true == data.StartsWith(m_commands[static_cast<uint8>(CMD_TYPE::MSG)]))
+		{
+			//귓속말 출력
+			TArray<FString> msgs;
+			data.ParseIntoArray(msgs, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+			uiTotal->AddChatLog(msgs, FLinearColor(0.5, 0.5, 1.0, 1.0));
+		}
+		else
+		{
+			//채팅메세지 출력
+			TArray<FString> msgs;
+			data.ParseIntoArray(msgs, *m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)]);
+			uiTotal->AddChatLog(msgs);
 		}
 	}
 }
