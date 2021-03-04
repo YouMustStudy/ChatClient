@@ -6,10 +6,11 @@
 
 #include <string>
 #include <cuchar>
-#include <clocale>
+#include <locale>
 #include <atomic>
 #include <vector>
 #include <thread>
+#include <codecvt>
 using namespace std;
 
 #include "Containers/Queue.h"
@@ -85,6 +86,21 @@ private:
 
 	void recvThread();
 
+	/**
+	*@brief MBCS에서 UNICODE로 변환하는 함수
+	*param[in] str 변환할 MBCS 문자열
+	*param[in] loc 변환 시 사용할 로케일
+	*return UNICODE 문자열
+	*/
+	wstring MbsToWcs(const string& str, const locale& loc = std::locale(""));
+
+	/**
+	*@brief UNICODE에서 MBCS로 변환하는 함수
+	*param[in] str 변환할 UNICODE 문자열
+	*param[in] loc 변환 시 사용할 로케일
+	*return MBCS 문자열
+	*/
+	string WcsToMbs(const wstring& str, const locale& loc = std::locale(""));
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

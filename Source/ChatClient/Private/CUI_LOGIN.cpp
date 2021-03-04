@@ -16,11 +16,13 @@ void UCUI_LOGIN::Login()
 	std::wcmatch wideMatch;
 	if (true == std::regex_match(*ipAddr, wideMatch, ipParser))
 	{
-		if (true == chatModule->ConnectServer(FString(wideMatch[1].str().c_str()), stoi(wideMatch[6].str())))
+		FString ID = inputIDBox->GetText().ToString();
+		if (false == ID.IsEmpty())
 		{
-			FString ID = inputIDBox->GetText().ToString();
-			if (false == ID.IsEmpty())
+			if (true == chatModule->ConnectServer(FString(wideMatch[1].str().c_str()), stoi(wideMatch[6].str())))
+			{
 				chatModule->SendMsg(loginPrefix + ID);
+			}
 		}
 	}
 }

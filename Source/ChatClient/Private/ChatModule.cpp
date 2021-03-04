@@ -1,13 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "ChatModule.h"
-
 // Sets default values
 AChatModule::AChatModule()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	//코드페이지 한글 명시
-	setlocale(LC_ALL, "Korean");
+	//setlocale(LC_ALL, "");
 }
 
 bool AChatModule::ConnectServer(const FString& address, int32 port)
@@ -45,25 +44,29 @@ bool AChatModule::ConnectServer(const FString& address, int32 port)
 void AChatModule::SendMsg(UPARAM(ref) const FString& msg)
 {
 	//서버로 메세지를 전송하는 함수
-	size_t convertedNum;
+	//size_t convertedNum;
 	FString completeMsg = msg + m_commands[static_cast<uint8>(CMD_TYPE::SUFFIX)];
-	wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
-	if (0 != convertedNum)
+
+	//wcstombs_s<BUF_SIZE>(&convertedNum, m_mbcsBuffer, *completeMsg, BUF_SIZE);
+	string convertedMsg = WcsToMbs(*completeMsg);
+	if (0 != convertedMsg.size())
 	{
 		int sendLength = 0;
 		if (nullptr != m_socket)
 		{
-			m_socket->Send(reinterpret_cast<const uint8*>(m_mbcsBuffer), strlen(m_mbcsBuffer), sendLength);
+			//m_socket->Send(reinterpret_cast<const uint8*>(m_mbcsBuffer), strlen(m_mbcsBuffer), sendLength);
+			m_socket->Send(reinterpret_cast<const uint8*>(convertedMsg.c_str()), convertedMsg.size(), sendLength);
 		}
 	}
 };
 
 void AChatModule::recvThread()
 {
-	TCHAR utf16buffer[BUF_SIZE];
+	//TCHAR utf16buffer[BUF_SIZE];
 	size_t convertedNum = 0;
 	uint8 buffer[BUF_SIZE + 1];
 	string data;
+	string noSuffixData;
 	char suffixStamp = 5;
 	string suffix = string("\r\n") + suffixStamp;
 	while (true == m_online)
@@ -87,14 +90,39 @@ void AChatModule::recvThread()
 				int32 detPos = data.find(suffix);
 				if (string::npos != detPos)
 				{
-					mbstowcs_s<BUF_SIZE>(&convertedNum, utf16buffer, data.substr(0, detPos).c_str(), BUF_SIZE);
-					m_recvQueue.Enqueue(utf16buffer);
+					//mbstowcs_s<BUF_SIZE>(&convertedNum, utf16buffer, data.substr(0, detPos).c_str(), BUF_SIZE);
+					wstring convertedMsg = MbsToWcs(data.substr(0, detPos).c_str());
+					m_recvQueue.Enqueue(FString(convertedMsg.c_str()));
 					data = data.substr(detPos + suffix.size());
 				}
 				else break;
 			}
 		}
 	}
+}
+
+wstring AChatModule::MbsToWcs(const string& str, const locale& loc)
+{
+	using codecvt_t = codecvt<wchar_t, char, mbstate_t>;
+	const codecvt_t& codecvt = use_facet<codecvt_t>(loc);
+	mbstate_t state{};
+	vector<wchar_t> buf(str.size() + 1);
+	const char* in_next = str.c_str();
+	wchar_t* out_next = &buf[0];
+	codecvt.in(state, str.c_str(), str.c_str() + str.size(), in_next, &buf[0], &buf[0] + buf.size(), out_next);
+	return wstring(&buf[0]);
+}
+
+string AChatModule::WcsToMbs(const wstring& str, const locale& loc)
+{
+	using codecvt_t = codecvt<wchar_t, char, mbstate_t>;
+	const codecvt_t& codecvt = use_facet<codecvt_t>(loc);
+	mbstate_t state{};
+	vector<char> buf((str.size() + 1) * codecvt.max_length());
+	const wchar_t* in_next = str.c_str();
+	char* out_next = &buf[0];
+	codecvt.out(state, str.c_str(), str.c_str() + str.size(), in_next, &buf[0], &buf[0] + buf.size(), out_next);
+	return string(&buf[0]);
 }
 
 // Called when the game starts or when spawned
